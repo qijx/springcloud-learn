@@ -1,0 +1,46 @@
+server:
+  port: 80
+
+spring:
+  application:
+    name: springboot-xiaohu
+  datasource:
+   type: com.zaxxer.hikari.HikariDataSource
+   driver-class-name: com.mysql.cj.jdbc.Driver
+   url: jdbc:mysql://49.234.62.126:3306/xiaohu
+   username: root
+   password: root
+   hikari:
+      minimum-idle: 1
+      maximum-pool-size: 5
+      auto-commit: true
+      pool-name: DatebookHikariCP
+      connection-timeout: 12000
+
+rocketmq:
+  producer:
+    retry-times-when-send-failed: 3
+    group: my-group
+    retry-next-server: 'true'
+    retry-times-when-send-async-failed: 3
+    compress-message-body-threshold: 4096
+    send-message-timeout: 5000
+    max-message-size: 4194304
+  name-server: '10.0.13.14:9876'
+
+
+mybatis:
+   mapper-locations: classpath*:mapper/*.xml #注意：一定要对应mapper映射xml文件的所在路径
+   type-aliases-package: com.example.springboot.demo.dto # 注意：对应实体类的路径
+   configuration:
+      map-underscore-to-camel-case: true
+      log-impl: org.apache.ibatis.logging.stdout.StdOutImpl  #打印sql语句
+
+
+#异步调用线程池配置方式
+task:
+   pool:
+     corePoolSize: 10
+     maxPoolSize: 10
+     keepAliveSeconds: 500
+     queueCapacity: 2
