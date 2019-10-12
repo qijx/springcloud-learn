@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+<div class="wrapper wrapper-content ">
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-content">
+                    <form class="form-horizontal m-t" id="signupForm">
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">api名称：</label>
+                            <div class="col-sm-8">
+                                <input id="name" name="name" class="form-control" type="text">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">路径：</label>
+                            <div class="col-sm-8">
+                                <input id="path" name="path" class="form-control" type="text">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">组：</label>
+                            <div class="col-sm-8">
+                                <input id="groupId" name="groupId" class="form-control" type="text">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">方法：</label>
+                            <div class="col-sm-8">
+                                <input id="method" name="method" class="form-control" type="text">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">版本：</label>
+                            <div class="col-sm-8">
+                                <input id="version" name="version" class="form-control" type="text">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">创建时间：</label>
+                            <div class="col-sm-8">
+                                <input id="createTime" name="createTime" class="form-control" type="text">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">更新时间：</label>
+                            <div class="col-sm-8">
+                                <input id="updateTime" name="updateTime" class="form-control" type="text">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">创建者：</label>
+                            <div class="col-sm-8">
+                                <input id="createUser" name="createUser" class="form-control" type="text">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">更新者：</label>
+                            <div class="col-sm-8">
+                                <input id="updateUser" name="updateUser" class="form-control" type="text">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">可用性：</label>
+                            <div class="col-sm-8">
+                                <input id="available" name="available" class="form-control" type="text">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">是否已删除：</label>
+                            <div class="col-sm-8">
+                                <input id="deleted" name="deleted" class="form-control" type="text">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-8 col-sm-offset-3">
+                                <button type="submit" class="btn btn-primary">提交</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:include="include::footer"></div>
+<script type="text/javascript" src="/js/appjs/system/api/add.js">
+</script>
+</body>
+</html>

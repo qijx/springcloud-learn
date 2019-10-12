@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rome.openapi.backend.mapper.AppApiEntryMapper">
+  <resultMap id="BaseResultMap" type="com.rome.openapi.backend.vo.AppApiEntry">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="app_id" jdbcType="VARCHAR" property="appId" />
+    <result column="api_id" jdbcType="INTEGER" property="apiId" />
+    <result column="select_field" jdbcType="VARCHAR" property="selectField" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="create_user" jdbcType="VARCHAR" property="createUser" />
+    <result column="update_user" jdbcType="VARCHAR" property="updateUser" />
+    <result column="available" jdbcType="BIT" property="available" />
+    <result column="deleted" jdbcType="BIT" property="deleted" />
+  </resultMap>
+
+  <resultMap id="AppSelectedApisMap" type="com.rome.openapi.backend.vo.AppSelectedApi">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="app_id" jdbcType="VARCHAR" property="appId" />
+    <result column="api_id" jdbcType="INTEGER" property="apiId" />
+    <result column="api_name" jdbcType="VARCHAR" property="apiName" />
+    <result column="select_field" jdbcType="VARCHAR" property="selectedFields" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, app_id, api_id, select_field, create_time, update_time, create_user, update_user, 
+    available, deleted
+  </sql>
+
+  <select id="queryAllAppApis" resultMap="BaseResultMap">
+    SELECT <include refid="Base_Column_List"/>
+    FROM  open_app_api
+    WHERE available=1 AND deleted=0
+  </select>
+
+  <select id="queryAppApis" resultMap="AppSelectedApisMap">
+    SELECT
+        app.id,
+        app.app_id,
+        app.api_id,
+        api.`name` AS 'api_name',
+        app.select_field
+    FROM
+        open_app_api app
+    LEFT JOIN open_api api ON app.api_id = api.id
+    WHERE app.app_id=#{appid} AND  app.available=1 AND app.deleted=0 AND  api.available=1 AND api.deleted=0
+    ORDER BY app.id
+  </select>
+
+  <update id="deleteAppApi" parameterType="com.rome.openapi.backend.vo.AppApiEntry">
+    update
+      open_app_api
+    set
+      deleted=1,
+      update_time = #{updateTime},
+      update_user = #{updateUser}
+    where id = #{id}
+  </update>
+
+  <select id="existsAppApi" parameterType="com.rome.openapi.backend.vo.AppApiEntry" resultType="java.lang.Integer">
+    select
+      count(1)
+    from
+      open_app_api
+    where
+      app_id = #{appId} AND api_id = #{apiId} AND available=1 AND deleted=0
+  </select>
+
+  <update id="updateAppApi" parameterType="com.rome.openapi.backend.vo.AppApiEntry">
+     update
+      open_app_api
+    set
+      select_field = #{selectField},
+      update_time = #{updateTime},
+      update_user = #{updateUser}
+    where id = #{id}
+
+  </update>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from open_app_api
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from open_app_api
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.rome.openapi.backend.vo.AppApiEntry">
+    insert into open_app_api (app_id, api_id,
+      select_field, create_time, update_time, 
+      create_user, update_user, available, 
+      deleted)
+    values (#{appId,jdbcType=VARCHAR}, #{apiId,jdbcType=INTEGER},
+      #{selectField,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{createUser,jdbcType=VARCHAR}, #{updateUser,jdbcType=VARCHAR}, #{available,jdbcType=BIT}, 
+      #{deleted,jdbcType=BIT})
+  </insert>
+
+  <insert id="batchInsert" parameterType="java.util.List">
+    insert into open_app_api (app_id, api_id,
+      select_field, create_time, update_time,
+      create_user, update_user, available,
+      deleted)
+    values
+      <foreach collection="list" item="entry" index="index" separator =",">
+        (#{entry.appId,jdbcType=VARCHAR}, #{entry.apiId,jdbcType=INTEGER},
+        #{entry.selectField,jdbcType=VARCHAR}, #{entry.createTime,jdbcType=TIMESTAMP}, #{entry.updateTime,jdbcType=TIMESTAMP},
+        #{entry.createUser,jdbcType=VARCHAR}, #{entry.updateUser,jdbcType=VARCHAR}, #{entry.available,jdbcType=BIT},
+        #{entry.deleted,jdbcType=BIT})
+      </foreach>
+  </insert>
+  
+  <update id="batchDelAppApi" parameterType="java.util.List">
+    update
+      open_app_api
+    set
+      deleted = 1,
+      update_time = now()
+    where id
+    in
+    <foreach collection="list" item="id" index="index" separator="," open="(" close=")">
+      #{id}
+    </foreach>
+  </update>
+
+  <insert id="insertSelective" parameterType="com.rome.openapi.backend.vo.AppApiEntry">
+    insert into open_app_api
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="appId != null">
+        app_id,
+      </if>
+      <if test="apiId != null">
+        api_id,
+      </if>
+      <if test="selectField != null">
+        select_field,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="createUser != null">
+        create_user,
+      </if>
+      <if test="updateUser != null">
+        update_user,
+      </if>
+      <if test="available != null">
+        available,
+      </if>
+      <if test="deleted != null">
+        deleted,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="appId != null">
+        #{appId,jdbcType=VARCHAR},
+      </if>
+      <if test="apiId != null">
+        #{apiId,jdbcType=INTEGER},
+      </if>
+      <if test="selectField != null">
+        #{selectField,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null">
+        #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null">
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="available != null">
+        #{available,jdbcType=BIT},
+      </if>
+      <if test="deleted != null">
+        #{deleted,jdbcType=BIT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.rome.openapi.backend.vo.AppApiEntry">
+    update open_app_api
+    <set>
+      <if test="appId != null">
+        app_id = #{appId,jdbcType=VARCHAR},
+      </if>
+      <if test="apiId != null">
+        api_id = #{apiId,jdbcType=INTEGER},
+      </if>
+      <if test="selectField != null">
+        select_field = #{selectField,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null">
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null">
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="available != null">
+        available = #{available,jdbcType=BIT},
+      </if>
+      <if test="deleted != null">
+        deleted = #{deleted,jdbcType=BIT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.rome.openapi.backend.vo.AppApiEntry">
+    update open_app_api
+    set app_id = #{appId,jdbcType=VARCHAR},
+      api_id = #{apiId,jdbcType=INTEGER},
+      select_field = #{selectField,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      create_user = #{createUser,jdbcType=VARCHAR},
+      update_user = #{updateUser,jdbcType=VARCHAR},
+      available = #{available,jdbcType=BIT},
+      deleted = #{deleted,jdbcType=BIT}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+</mapper>

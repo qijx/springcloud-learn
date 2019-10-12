@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+<div class="wrapper wrapper-content ">
+    <div class="row">
+        <div class="col-sm-4">
+            <div class="ibox">
+                <div class="ibox-body">
+                    <div class="fixed-table-toolbar">
+                        <div class="columns pull-left">
+                            <h3 aria-hidden="true">API服务分组列表</h3>
+                        </div>
+                    </div>
+                    <table id="serviceTable" data-mobile-responsive="true">
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-8">
+            <div class="ibox">
+                <div class="ibox-body">
+                    <div class="fixed-table-toolbar">
+                        <div class="columns pull-left">
+                            <button type="button" class="btn  btn-danger"
+                                    onclick="batchRemove()">
+                                <i class="fa fa-trash" aria-hidden="true"></i>删除
+                            </button>
+                            <div id="serviceGroup" class="btn btn-primary" style="margin-left: 20px" title="点击显示所有分组">
+                                当前服务分组：<span id="serviceName">所有分组</span>
+                            </div>
+                        </div>
+                        <div class="columns pull-right">
+                            <button class="btn btn-success" onclick="reLoad()">查询</button>
+                        </div>
+                        <div class="columns pull-right col-md-2 nopadding">
+                            <input id="searchName" type="text" class="form-control"
+                                   placeholder="">
+                            <input id="searchServiceId" type="hidden" value=""/>
+                        </div>
+                    </div>
+                    <table id="exampleTable" data-mobile-responsive="true">
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:include="include :: footer"></div>
+<script type="text/javascript" src="/js/appjs/system/api/api.js"></script>
+</body>
+</html>

@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rome.openapi.backend.mapper.UriWhiteListMapper">
+  <resultMap id="BaseResultMap" type="com.rome.openapi.backend.vo.UriWhiteList">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="URI" jdbcType="VARCHAR" property="uri" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="create_user" jdbcType="VARCHAR" property="createUser" />
+    <result column="available" jdbcType="BIT" property="available" />
+    <result column="deleted" jdbcType="BIT" property="deleted" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, URI, create_time, create_user, available, deleted
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from uri_white_list
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectAll" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from uri_white_list
+    where available = 1 and deleted = 0
+  </select>
+
+  <select id="selectAllListOnlyUri" resultType="java.lang.String">
+    select URI
+    from uri_white_list
+    where available = 1 and deleted = 0
+  </select>
+
+  <select id="list" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from uri_white_list
+    where deleted = 0
+      <if test="id != null and id != ''"> and id = #{id} </if>
+      <if test="uri != null and uri != ''"> and URI = #{uri} </if>
+      <if test="createTime != null and createTime != ''"> and create_time = #{createTime} </if>
+      <if test="updateTime != null and updateTime != ''"> and update_time = #{updateTime} </if>
+      <if test="createUser != null and createUser != ''"> and create_user = #{createUser} </if>
+      <if test="updateUser != null and updateUser != ''"> and update_user = #{updateUser} </if>
+      <if test="available != null and available != ''"> and available = #{available} </if>
+      <if test="deleted != null and deleted != ''"> and deleted = #{deleted} </if>
+    <choose>
+      <when test="sort != null and sort.trim() != ''">
+        order by ${sort} ${order}
+      </when>
+      <otherwise>
+        order by id desc
+      </otherwise>
+    </choose>
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    update uri_white_list set deleted = 1
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.rome.openapi.backend.vo.UriWhiteList">
+    insert into uri_white_list (id, URI, create_time, 
+      create_user, available, deleted
+      )
+    values (#{id,jdbcType=INTEGER}, #{uri,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{createUser,jdbcType=VARCHAR}, #{available,jdbcType=BIT}, #{deleted,jdbcType=BIT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.rome.openapi.backend.vo.UriWhiteList">
+    insert into uri_white_list
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="uri != null">
+        URI,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="createUser != null">
+        create_user,
+      </if>
+      <if test="available != null">
+        available,
+      </if>
+      <if test="deleted != null">
+        deleted,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="uri != null">
+        #{uri,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null">
+        #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="available != null">
+        #{available,jdbcType=BIT},
+      </if>
+      <if test="deleted != null">
+        #{deleted,jdbcType=BIT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.rome.openapi.backend.vo.UriWhiteList">
+    update uri_white_list
+    <set>
+      <if test="uri != null">
+        URI = #{uri,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null">
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="available != null">
+        available = #{available,jdbcType=BIT},
+      </if>
+      <if test="deleted != null">
+        deleted = #{deleted,jdbcType=BIT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.rome.openapi.backend.vo.UriWhiteList">
+    update uri_white_list
+    set URI = #{uri,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      create_user = #{createUser,jdbcType=VARCHAR},
+      available = #{available,jdbcType=BIT},
+      deleted = #{deleted,jdbcType=BIT}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <update id="batchRemove">
+    update uri_white_list set deleted =1 where id in
+    <foreach item="id" collection="array" open="(" separator="," close=")">
+      #{id}
+    </foreach>
+  </update>
+</mapper>

@@ -1,0 +1,40 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/openapi?useUnicode=true&characterEncoding=UTF-8&useSSL=false&allowMultiQueries=true
+    password: root
+    driver-class-name: com.mysql.jdbc.Driver
+    username: root
+    name: tradecenter
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      connection-timeout: 30000
+      pool-name: DatebookHikariCP
+      auto-commit: 'true'
+      maximum-pool-size: 1000
+      minimum-idle: 5
+      idle-timeout: 30000
+  rabbitmq:
+    port: 5672
+    host: 10.6.4.21
+    publisher-returns: 'true'
+    publisher-confirms: 'true'
+    password: admin
+    username: admin
+pagehelper:
+  reasonable: 'true'
+  params: count=countSql
+  supportMethodsArguments: 'true'
+  returnPageInfo: check
+  helperDialect: mysql
+system:
+  event:
+    bus:
+      connectionUri: 'amqp://admin:admin@10.6.4.21:5672'
+      enabled: 'true'
+      service: '${spring.application.name}'
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: 'true'
+  mapper-locations: 'classpath*:mapping/*.xml'
+  type-aliases-package: com.rome.openapi.backend

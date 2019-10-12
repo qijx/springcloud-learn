@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>用户列表</title>
+</head>
+<body>
+<div >
+    <div>
+        <a href="/openApp/openAppInfoAdd">注册</a>
+    </div>
+    <table th:border="1">
+        <thead>
+            <tr>
+                <td>商户号</td>
+                <td>商户名称</td>
+                <td>商户类型</td>
+                <td>密钥</td>
+                <td>密钥类型</td>
+                <td>是否有白名单</td>
+            </tr>
+        </thead>
+        <tbody>
+        <p th:each="openApp:${page.list}">
+            <tr>
+                <td th:text="${openApp.appId}"></td>
+                <td th:text="${openApp.appName}"></td>
+                <td th:text="${openApp.appType}"></td>
+                <td th:text="${openApp.secretKey}"></td>
+                <td th:text="${openApp.secretType}"></td>
+                <td th:text="${openApp.hasWhiteList}"></td>
+            </tr>
+        </p>
+        </tbody>
+    </table>
+
+    <div id="page" url="/openApp/openAppList" ></div>
+    <div th:replace="page :: page"></div>
+</div>
+</body>
+</html>

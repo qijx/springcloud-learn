@@ -1,0 +1,54 @@
+<!DOCTYPE html >
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="page">
+    <link rel="stylesheet" th:href="@{/js/jpaginate/css/style.css}" />
+    <script type="text/javascript" th:src="@{/js/jpaginate/jquery-1.3.2.js}"></script>
+    <script type="text/javascript" th:src="@{/js/jpaginate/jquery.paginate.js}"></script>
+    <script th:inline="javascript">
+        (function($) {
+            /*<![CDATA[*/
+            var count=[[${page.pages}]];
+            var start=[[${page.pageNum}]];
+            /*]]>*/
+            var url=$("#page").attr('url');
+            var displaycnt=[[${page.pages}]];
+            var pageSize = [[${page.pageSize}]]
+            fenye(count,start,url,displaycnt,pageSize);
+        })(jQuery);
+        function fenye(count,start,url,displaycnt,pageSize){
+            // debugger
+            /*<![CDATA[*/
+            if(count<2)
+                return;
+            if(displaycnt>10)
+                displaycnt = 10;
+            /*]]>*/
+            $("#page").paginate({
+                count     : count,
+                start     : start,
+                display   : displaycnt,
+                border          : true,
+                border_color      : '#fff',
+                text_color       : '#fff',
+                background_color    : 'pink',
+                border_hover_color    : '#ccc',
+                text_hover_color     : '#000',
+                background_hover_color  : '#fff',
+                images          : true,
+                mouse          : 'press',
+                onChange: function(page_index) {
+                    var tourl;
+                    /*<![CDATA[*/
+                    if(url.indexOf('?')>0)
+                        tourl=url+'&pageNum='+page_index+"&pageSize="+pageSize;
+                    else
+                        tourl=url+'?pageNum='+page_index+"&pageSize="+pageSize;
+                    window.location.href=tourl;
+                    /*]]>*/
+                }
+            });
+        };
+    </script>
+</head>
+</html>

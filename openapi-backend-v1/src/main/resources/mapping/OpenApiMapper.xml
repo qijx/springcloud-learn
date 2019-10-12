@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rome.openapi.backend.mapper.OpenApiMapper">
+  <resultMap id="BaseResultMap" type="com.rome.openapi.backend.vo.OpenApi">
+  <id column="id" jdbcType="INTEGER" property="id" />
+  <result column="name" jdbcType="VARCHAR" property="name" />
+  <result column="path" jdbcType="VARCHAR" property="path" />
+  <result column="group_id" jdbcType="INTEGER" property="groupId" />
+  <result column="method" jdbcType="VARCHAR" property="method" />
+  <result column="version" jdbcType="VARCHAR" property="version" />
+  <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  <result column="create_user" jdbcType="VARCHAR" property="createUser" />
+  <result column="update_user" jdbcType="VARCHAR" property="updateUser" />
+  <result column="available" jdbcType="BIT" property="available" />
+  <result column="deleted" jdbcType="BIT" property="deleted" />
+</resultMap>
+
+  <resultMap id="ApiAppResultMap" type="com.rome.openapi.backend.vo.ApiEntry">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="path" jdbcType="VARCHAR" property="path" />
+    <result column="method" jdbcType="VARCHAR" property="method" />
+    <result column="version" jdbcType="VARCHAR" property="version" />
+    <result column="available" jdbcType="BIT" property="available" />
+    <collection property="appKey" ofType="string" javaType="list">
+      <result column="app_id"/>
+    </collection>
+  </resultMap>
+
+  <resultMap id="GroupResultMap" type="com.rome.openapi.backend.vo.OpenApiGroupEntry">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="path" jdbcType="VARCHAR" property="path" />
+    <result column="group_id" jdbcType="INTEGER" property="groupId" />
+    <result column="method" jdbcType="VARCHAR" property="method" />
+    <result column="version" jdbcType="VARCHAR" property="version" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="create_user" jdbcType="VARCHAR" property="createUser" />
+    <result column="update_user" jdbcType="VARCHAR" property="updateUser" />
+    <result column="available" jdbcType="BIT" property="available" />
+    <result column="deleted" jdbcType="BIT" property="deleted" />
+    <result column="service_id" jdbcType="INTEGER" property="serviceId" />
+    <result column="service" jdbcType="VARCHAR" property="service" />
+    <result column="group" jdbcType="VARCHAR" property="group" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    id, name, path, group_id, method, version, create_time, update_time, create_user, 
+    update_user, available, deleted
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from open_api
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectByGroupId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from open_api
+    where group_id = #{groupId,jdbcType=INTEGER} and deleted = 0
+  </select>
+
+  <select id="selectWithApp" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select
+    id, `name`, path, api.method, version, available
+    from open_api api
+    where api.available =1 and api.deleted =0
+  </select>
+
+  <select id="list" resultMap="GroupResultMap">
+    select
+    api.id, `name`, path, group_id, method, version, api.create_time, api.update_time, api.create_user,
+    api.update_user, api.available, api.deleted,groups.id as service_id,service,`group`
+    from open_api api left join open_api_group groups
+    on api.group_id = groups.id
+    where api.deleted =0
+    <if test="id != null"> and id = #{id} </if>
+    <if test="serviceId != null and serviceId != ''"> and group_id = #{serviceId} </if>
+    <if test="name != null and name != ''"> and name = #{name} </if>
+    <if test="path != null and path != ''"> and path = #{path} </if>
+    <if test="groupId != null"> and group_id = #{groupId} </if>
+    <if test="method != null and method != ''"> and method = #{method} </if>
+    <if test="version != null and version != ''"> and version = #{version} </if>
+    <if test="createTime != null"> and create_time = #{createTime} </if>
+    <if test="updateTime != null"> and update_time = #{updateTime} </if>
+    <if test="createUser != null and createUser != ''"> and create_user = #{createUser} </if>
+    <if test="updateUser != null and updateUser != ''"> and update_user = #{updateUser} </if>
+    <if test="available != null"> and available = #{available} </if>
+    <choose>
+      <when test="sort != null and sort.trim() != ''">
+        order by ${sort} ${order}
+      </when>
+      <otherwise>
+        order by id desc
+      </otherwise>
+    </choose>
+  </select>
+
+  <select id="groupList" resultType="com.rome.openapi.backend.vo.ApiGroup">
+    select id,service,`group`
+    from open_api_group
+    where available = 1 and deleted = 0
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    update open_api set deleted = 1
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.rome.openapi.backend.vo.OpenApi">
+    insert into open_api (id, name, path, 
+      group_id, method, version, 
+      create_time, update_time, create_user, 
+      update_user, available, deleted
+      )
+    values (#{id,jdbcType=INTEGER}, #{name,jdbcType=VARCHAR}, #{path,jdbcType=VARCHAR}, 
+      #{groupId,jdbcType=INTEGER}, #{method,jdbcType=VARCHAR}, #{version,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{createUser,jdbcType=VARCHAR}, 
+      #{updateUser,jdbcType=VARCHAR}, #{available,jdbcType=BIT}, #{deleted,jdbcType=BIT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.rome.openapi.backend.vo.OpenApi">
+    insert into open_api
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="path != null">
+        path,
+      </if>
+      <if test="groupId != null">
+        group_id,
+      </if>
+      <if test="method != null">
+        method,
+      </if>
+      <if test="version != null">
+        version,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="createUser != null">
+        create_user,
+      </if>
+      <if test="updateUser != null">
+        update_user,
+      </if>
+      <if test="available != null">
+        available,
+      </if>
+      <if test="deleted != null">
+        deleted,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="path != null">
+        #{path,jdbcType=VARCHAR},
+      </if>
+      <if test="groupId != null">
+        #{groupId,jdbcType=INTEGER},
+      </if>
+      <if test="method != null">
+        #{method,jdbcType=VARCHAR},
+      </if>
+      <if test="version != null">
+        #{version,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null">
+        #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null">
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="available != null">
+        #{available,jdbcType=BIT},
+      </if>
+      <if test="deleted != null">
+        #{deleted,jdbcType=BIT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.rome.openapi.backend.vo.OpenApi">
+    update open_api
+    <set>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="path != null">
+        path = #{path,jdbcType=VARCHAR},
+      </if>
+      <if test="groupId != null">
+        group_id = #{groupId,jdbcType=INTEGER},
+      </if>
+      <if test="method != null">
+        method = #{method,jdbcType=VARCHAR},
+      </if>
+      <if test="version != null">
+        version = #{version,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null">
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null">
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="available != null">
+        available = #{available,jdbcType=BIT},
+      </if>
+      <if test="deleted != null">
+        deleted = #{deleted,jdbcType=BIT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.rome.openapi.backend.vo.OpenApi">
+    update open_api
+    set name = #{name,jdbcType=VARCHAR},
+      path = #{path,jdbcType=VARCHAR},
+      group_id = #{groupId,jdbcType=INTEGER},
+      method = #{method,jdbcType=VARCHAR},
+      version = #{version,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      create_user = #{createUser,jdbcType=VARCHAR},
+      update_user = #{updateUser,jdbcType=VARCHAR},
+      available = #{available,jdbcType=BIT},
+      deleted = #{deleted,jdbcType=BIT}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <delete id="batchRemove">
+    update open_api set deleted = 1 where id in
+    <foreach item="id" collection="array" open="(" separator="," close=")">
+      #{id}
+    </foreach>
+  </delete>
+
+  <delete id="removeByGroupId" parameterType="java.lang.Integer">
+    update open_api set deleted = 1 where group_id = #{groupId,jdbcType=INTEGER}
+  </delete>
+</mapper>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>app用户注册</title>
+</head>
+<body>
+<div>
+    <form action="#" th:action="@{/openApp/openAppInfo}" method="post">
+        <table>
+            <tr>
+                <td>商户名称:</td>
+                <td><input name="appName" type="text"></td>
+            </tr>
+            <tr>
+                <td>商户类型:</td>
+                <td><input name="appType" type="radio" value="0">内部
+                <input name="appType" type="radio" value="1" checked>外部</td>
+
+            </tr>
+            <tr>
+                <td>密钥:</td>
+                <td><input name="secretKey" type="text"></td>
+            <tr>
+            <td>密钥类型:</td>
+            <td><input name="secretType" type="text" value="default"></td>
+        </tr>
+            <tr>
+                <td>
+                    <input type="submit" value="提交">
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+</body>
+</html>

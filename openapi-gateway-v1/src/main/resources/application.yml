@@ -1,0 +1,42 @@
+feign:
+  client:
+    config:
+      default:
+        readTimeout: 5000
+        connectTimeout: 5000
+        loggerLevel: full
+  httpclient:
+    max-connections: 2000
+    max-connections-per-route: 500
+    enabled: 'true'
+spring:
+  sleuth:
+    sampler:
+      probability: 1
+  servlet:
+    multipart:
+      enabled: 'true'
+      max-file-size: 50MB
+      location: '/data/temp/${spring.application.name}/multipartUpload'
+      max-request-size: 50MB
+  zipkin:
+    base-url: 'http://10.0.0.38:9411'
+ribbon:
+  ConnectTimeout: 5000
+  ReadTimeout: 10000
+zuul:
+  host:
+    connect-timeout-millis: 3000
+    max-total-connections: 1000
+    socket-timeout-millis: 10000
+    max-per-route-connections: 500
+  semaphore:
+    max-semaphores: 1000
+server:
+  tomcat:
+    max-threads: 1000
+    min-spare-threads: 100
+    accept-count: 500
+    max-connections: 1000
+iplist:
+  'list[0]': 10.0.17.23

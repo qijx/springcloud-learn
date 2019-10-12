@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rome.openapi.backend.mapper.OpenApiGroupMapper">
+  <resultMap id="BaseResultMap" type="com.rome.openapi.backend.vo.OpenApiGroup">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="service" jdbcType="VARCHAR" property="service" />
+    <result column="group" jdbcType="VARCHAR" property="group" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="create_user" jdbcType="VARCHAR" property="createUser" />
+    <result column="available" jdbcType="BIT" property="available" />
+    <result column="deleted" jdbcType="BIT" property="deleted" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, service, `group`, create_time, create_user, available, deleted
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from open_api_group
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <select id="selectByService" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from open_api_group
+    where service like #{service,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    update open_api_group set deleted = 1
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+
+  <select id="list" resultType="com.rome.openapi.backend.vo.OpenApiGroup">
+    select `id`,`service`,`group`,`create_time`,`create_user`,`available`,`deleted` from open_api_group
+    where deleted = 0
+      <if test="id != null"> and id = #{id} </if>
+      <if test="service != null and service != ''"> and service = #{service} </if>
+      <if test="group != null and group != ''"> and `group` = #{group} </if>
+      <if test="createTime != null and createTime != ''"> and create_time = #{createTime} </if>
+      <if test="createUser != null and createUser != ''"> and create_user = #{createUser} </if>
+      <if test="available != null"> and available = #{available} </if>
+    <choose>
+      <when test="sort != null and sort.trim() != ''">
+        order by ${sort} ${order}
+      </when>
+      <otherwise>
+        order by id desc
+      </otherwise>
+    </choose>
+  </select>
+
+  <select id="listAll" resultType="com.rome.openapi.backend.vo.OpenApiGroup">
+    select `id`,`service`,`group`,`create_time`,`create_user`,`available`,`deleted` from open_api_group
+    where deleted = 0 and available = 1
+    order by id desc
+
+  </select>
+
+  <insert id="insert" parameterType="com.rome.openapi.backend.vo.OpenApiGroup">
+    insert into open_api_group (id, service, `group`,
+      create_time, create_user, available, 
+      deleted)
+    values (#{id,jdbcType=INTEGER}, #{service,jdbcType=VARCHAR}, #{group,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{createUser,jdbcType=VARCHAR}, #{available,jdbcType=BIT}, 
+      #{deleted,jdbcType=BIT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.rome.openapi.backend.vo.OpenApiGroup">
+    insert into open_api_group
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="service != null">
+        service,
+      </if>
+      <if test="group != null">
+        `group`,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="createUser != null">
+        create_user,
+      </if>
+      <if test="available != null">
+        available,
+      </if>
+      <if test="deleted != null">
+        deleted,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=INTEGER},
+      </if>
+      <if test="service != null">
+        #{service,jdbcType=VARCHAR},
+      </if>
+      <if test="group != null">
+        #{group,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null">
+        #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="available != null">
+        #{available,jdbcType=BIT},
+      </if>
+      <if test="deleted != null">
+        #{deleted,jdbcType=BIT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.rome.openapi.backend.vo.OpenApiGroup">
+    update open_api_group
+    <set>
+      <if test="service != null">
+        service = #{service,jdbcType=VARCHAR},
+      </if>
+      <if test="group != null">
+        `group` = #{group,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null">
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="available != null">
+        available = #{available,jdbcType=BIT},
+      </if>
+      <if test="deleted != null">
+        deleted = #{deleted,jdbcType=BIT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.rome.openapi.backend.vo.OpenApiGroup">
+    update open_api_group
+    set service = #{service,jdbcType=VARCHAR},
+      `group` = #{group,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      create_user = #{createUser,jdbcType=VARCHAR},
+      available = #{available,jdbcType=BIT},
+      deleted = #{deleted,jdbcType=BIT}
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+
+  <delete id="remove">
+		update open_api_group set deleted = 1 where id = #{value}
+	</delete>
+
+  <delete id="batchRemove">
+    delete from open_api_group where id in
+    <foreach item="id" collection="array" open="(" separator="," close=")">
+      #{id}
+    </foreach>
+  </delete>
+</mapper>

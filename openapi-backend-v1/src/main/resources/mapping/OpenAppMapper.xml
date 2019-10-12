@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.rome.openapi.backend.mapper.OpenAppMapper">
+  <resultMap id="BaseResultMap" type="com.rome.openapi.backend.vo.OpenApp">
+    <id column="app_id" jdbcType="VARCHAR" property="appId" />
+    <result column="app_name" jdbcType="VARCHAR" property="appName" />
+    <result column="app_type" jdbcType="BIT" property="appType" />
+    <result column="secret_key" jdbcType="VARCHAR" property="secretKey" />
+    <result column="secret_type" jdbcType="VARCHAR" property="secretType" />
+    <result column="has_white_list" jdbcType="BIT" property="hasWhiteList" />
+    <result column="sign_version" jdbcType="BIT" property="signVersion" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="create_user" jdbcType="VARCHAR" property="createUser" />
+    <result column="update_user" jdbcType="VARCHAR" property="updateUser" />
+    <result column="available" jdbcType="BIT" property="available" />
+    <result column="deleted" jdbcType="BIT" property="deleted" />
+  </resultMap>
+
+  <resultMap id="ResultWithIPMap" type="com.rome.openapi.backend.vo.AppEntry">
+    <id column="app_id" jdbcType="VARCHAR" property="appId" />
+    <result column="app_name" jdbcType="VARCHAR" property="appName" />
+    <result column="app_type" jdbcType="BIT" property="appType" />
+    <result column="secret_key" jdbcType="VARCHAR" property="secretKey" />
+    <result column="secret_type" jdbcType="VARCHAR" property="secretType" />
+    <result column="has_white_list" jdbcType="BIT" property="hasWhiteList" />
+    <result column="sign_version" jdbcType="BIT" property="signVersion" />
+    <result column="available" jdbcType="BIT" property="available" />
+    <result column="ip" jdbcType="VARCHAR" property="IP" />
+  </resultMap>
+
+  <sql id="Base_Column_List">
+    app_id, app_name, app_type, secret_key, secret_type, has_white_list, sign_version, create_time,
+    update_time, create_user, update_user, available, deleted
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from open_app
+    where app_id = #{appId,jdbcType=VARCHAR} and deleted !=1
+  </select>
+
+  <select id="selectAppWithIP" resultMap="ResultWithIPMap">
+   SELECT
+	app.app_id,
+	app_name,
+	app_type,
+	secret_key,
+	secret_type,
+	has_white_list,
+	sign_version,
+	app.available,
+	ip
+  FROM
+      open_app app
+  LEFT JOIN app_ip_white_list ip ON app.app_id = ip.app_id AND ip.available = 1
+  AND ip.deleted = 0
+  where app.available = 1
+  AND app.deleted = 0
+  </select>
+
+  <select id="selectAppWithIPByAppid" parameterType="java.lang.String" resultMap="ResultWithIPMap">
+    SELECT
+      app.app_id,
+      app_name,
+      app_type,
+      secret_key,
+      secret_type,
+      has_white_list,
+      sign_version,
+      app.available,
+      ip
+    FROM
+        open_app app
+    LEFT JOIN app_ip_white_list ip ON has_white_list = 1
+    AND app.available = 1
+    AND app.deleted = 0
+    AND app.app_id = ip.app_id
+    AND ip.available = 1
+    AND ip.deleted = 0
+    WHERE app.app_id = #{appId,jdbcType=VARCHAR}
+  </select>
+
+  <select id="selectAll" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from open_app
+    where deleted !=1
+    <if test="appId != null and appId != ''">
+      and app_id = #{appId,jdbcType=VARCHAR}
+    </if>
+    <if test="appName != null and appName != ''">
+      and app_name = #{appName,jdbcType=VARCHAR}
+    </if>
+    <if test="appType != null">
+      and app_type = #{appType,jdbcType=BIT},
+    </if>
+    <if test="secretKey != null and secretKey!=''">
+      and secret_key = #{secretKey,jdbcType=VARCHAR}
+    </if>
+    <if test="secretType != null and secretType !=''">
+      and secret_type = #{secretType,jdbcType=VARCHAR}
+    </if>
+    <if test="hasWhiteList != null">
+      and has_white_list = #{hasWhiteList,jdbcType=BIT}
+    </if>
+     <if test="sign_version != null">
+      and sign_version = #{signVersion,jdbcType=BIT}
+    </if>
+    <choose>
+      <when test="sort != null and sort.trim() != ''">
+        order by ${sort} ${order}
+      </when>
+      <otherwise>
+        order by app_id desc
+      </otherwise>
+    </choose>
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from open_app
+    where app_id = #{appId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.rome.openapi.backend.vo.OpenApp">
+    insert into open_app (app_id, app_name, app_type, 
+      secret_key, secret_type, has_white_list, sign_version,
+      create_time, update_time, create_user, 
+      update_user, available, deleted
+      )
+    values (#{appId,jdbcType=VARCHAR}, #{appName,jdbcType=VARCHAR}, #{appType,jdbcType=BIT}, 
+      #{secretKey,jdbcType=VARCHAR}, #{secretType,jdbcType=VARCHAR}, #{hasWhiteList,jdbcType=BIT},#{signVersion,jdbcType=BIT},
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{createUser,jdbcType=VARCHAR}, 
+      #{updateUser,jdbcType=VARCHAR}, #{available,jdbcType=BIT}, #{deleted,jdbcType=BIT}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.rome.openapi.backend.vo.OpenApp">
+    insert into open_app
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="appId != null">
+        app_id,
+      </if>
+      <if test="appName != null">
+        app_name,
+      </if>
+      <if test="appType != null">
+        app_type,
+      </if>
+      <if test="secretKey != null">
+        secret_key,
+      </if>
+      <if test="secretType != null">
+        secret_type,
+      </if>
+      <if test="hasWhiteList != null">
+        has_white_list,
+      </if>
+      <if test="signVersion != null">
+        sign_version,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="createUser != null">
+        create_user,
+      </if>
+      <if test="updateUser != null">
+        update_user,
+      </if>
+      <if test="available != null">
+        available,
+      </if>
+      <if test="deleted != null">
+        deleted,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="appId != null">
+        #{appId,jdbcType=VARCHAR},
+      </if>
+      <if test="appName != null">
+        #{appName,jdbcType=VARCHAR},
+      </if>
+      <if test="appType != null">
+        #{appType,jdbcType=BIT},
+      </if>
+      <if test="secretKey != null">
+        #{secretKey,jdbcType=VARCHAR},
+      </if>
+      <if test="secretType != null">
+        #{secretType,jdbcType=VARCHAR},
+      </if>
+      <if test="hasWhiteList != null">
+        #{hasWhiteList,jdbcType=BIT},
+      </if>
+      <if test="signVersion != null">
+        #{signVersion,jdbcType=BIT},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null">
+        #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null">
+        #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="available != null">
+        #{available,jdbcType=BIT},
+      </if>
+      <if test="deleted != null">
+        #{deleted,jdbcType=BIT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.rome.openapi.backend.vo.OpenApp">
+    update open_app
+    <set>
+      <if test="appName != null">
+        app_name = #{appName,jdbcType=VARCHAR},
+      </if>
+      <if test="appType != null">
+        app_type = #{appType,jdbcType=BIT},
+      </if>
+      <if test="secretKey != null">
+        secret_key = #{secretKey,jdbcType=VARCHAR},
+      </if>
+      <if test="secretType != null">
+        secret_type = #{secretType,jdbcType=VARCHAR},
+      </if>
+      <if test="hasWhiteList != null">
+        has_white_list = #{hasWhiteList,jdbcType=BIT},
+      </if>
+       <if test="signVersion != null">
+        sign_version = #{signVersion,jdbcType=BIT},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createUser != null">
+        create_user = #{createUser,jdbcType=VARCHAR},
+      </if>
+      <if test="updateUser != null">
+        update_user = #{updateUser,jdbcType=VARCHAR},
+      </if>
+      <if test="available != null">
+        available = #{available,jdbcType=BIT},
+      </if>
+      <if test="deleted != null">
+        deleted = #{deleted,jdbcType=BIT},
+      </if>
+    </set>
+    where app_id = #{appId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.rome.openapi.backend.vo.OpenApp">
+    update open_app
+    set app_name = #{appName,jdbcType=VARCHAR},
+      app_type = #{appType,jdbcType=BIT},
+      secret_key = #{secretKey,jdbcType=VARCHAR},
+      secret_type = #{secretType,jdbcType=VARCHAR},
+      has_white_list = #{hasWhiteList,jdbcType=BIT},
+      sign_version = #{signVersion,jdbcType=BIT},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      create_user = #{createUser,jdbcType=VARCHAR},
+      update_user = #{updateUser,jdbcType=VARCHAR},
+      available = #{available,jdbcType=BIT},
+      deleted = #{deleted,jdbcType=BIT}
+    where app_id = #{appId,jdbcType=VARCHAR}
+  </update>
+
+  <delete id="batchRemove">
+    update open_app set deleted =1 where app_id in
+    <foreach item="appId" collection="array" open="(" separator="," close=")">
+      #{appId}
+    </foreach>
+  </delete>
+</mapper>
