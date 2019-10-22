@@ -1,0 +1,56 @@
+
+
+##----------------- 数据库相关配置 -----------------------------------
+#spring:
+#  datasource:
+#    type: com.zaxxer.hikari.HikariDataSource
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://localhost:3306/xxxx
+#    password: root
+#    username: root
+#    hikari:
+#      connection-timeout: 30000
+#      idle-timeout: 30000
+#      auto-commit: 'true'
+#      minimum-idle: 5
+#      maximum-pool-size: 1000
+#      pool-name: DatebookHikariCP
+#
+#mybatis:
+#  type-aliases-package: ${package}.domian
+#  configuration:
+#    map-underscore-to-camel-case: 'true'
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl    #打印sql日志
+#  mapper-locations: 'classpath*:mapper/*.xml'
+#
+#pagehelper:
+#  helperDialect: mysql
+#  reasonable: 'true'
+#  params: count=countSql
+#  returnPageInfo: check
+#  supportMethodsArguments: 'true'
+
+
+
+
+
+##----------------- rocketMQ 配置 -----------------------------------
+#rocketmq:
+#  name-server: 10.0.13.14:9876
+#  producer:
+#    group:  user-producer
+
+##----------------- redis相关配置 -----------------------------------
+#  redis:
+#    password: ''
+#    lettuce:
+#      pool:
+#        max-active: 200
+#        min-idle: 8
+#        max-wait: 30
+#        max-idle: 8
+#      shutdown-timeout: 100
+#    cluster:
+#      nodes: >-
+#        10.0.13.13:7001, 10.0.13.13:7002, 10.0.13.13:7003,
+#        10.0.13.13:7004,10.0.13.13:7005, 10.0.13.13:7006

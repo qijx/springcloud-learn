@@ -1,0 +1,49 @@
+server:
+  port: 8101
+
+spring:
+  profiles: dev
+  application:
+    name: sc-test-user01
+#  main:
+#    allow-bean-definition-overriding: true
+#  boot:
+#    admin:
+#      client:
+#        instance:
+#          metadata:
+#            tags:
+#              environment: ${spring.profiles}
+
+  #配置中心
+#  cloud:
+#      config:
+#        discovery:
+#          service-id: CONFIG-SERVER
+#          enabled: true
+#        name: ${spring.application.name}
+#        label: master
+
+eureka:
+  instance:
+    preferIpAddress: true
+    instance-id: ${spring.cloud.client.ip-address}:${server.port}
+  client:
+    serviceUrl:
+      defaultZone: "http://localhost:8761/eureka/"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+
+logger:
+  folder: "/data/logs"
+
+
+
+

@@ -1,0 +1,51 @@
+server:
+  port: 8001
+
+spring:
+  profiles: dev
+  application:
+    name: ${artifactId}
+#  main:
+#    allow-bean-definition-overriding: true
+#  boot:
+#    admin:
+#      client:
+#        instance:
+#          metadata:
+#            tags:
+#              environment: ${spring.profiles}
+
+  #配置中心
+#  cloud:
+#      config:
+#        discovery:
+#          service-id: CONFIG-SERVER
+#          enabled: true
+#        name: ${spring.application.name}
+#        label: master
+
+eureka:
+  instance:
+    preferIpAddress: true
+    instance-id: ${spring.cloud.client.ip-address}:${server.port}
+  client:
+    serviceUrl:
+      defaultZone: "http://localhost:8761/eureka/"
+
+
+#监控端点，*代表监控全部
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+
+logger:
+  folder: "/data/logs"
+
+
+
+
